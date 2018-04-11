@@ -1,0 +1,116 @@
+package org.usfirst.frc.team6074.robot;
+
+import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.buttons.JoystickButton;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.drive.MecanumDrive;
+import edu.wpi.first.wpilibj.CameraServer;
+import edu.wpi.first.wpilibj.DriverStation;
+
+public class Robot extends IterativeRobot {
+  private static final int kFrontLeftChannel = 0;
+  private static final int kFrontRightChannel = 1;
+  private static final int kJoystickChannel = 0;
+  
+  private Differential Drive m_robotDrive;
+  private Joystick m_stick;
+  private Spark liftMotor;
+  private Timer autotimer;
+}
+
+@Override
+  public void robotInit() {
+    CameraServer.getInstance ().startAutomaticCapture();
+    Spark frontLeft = new Spark(kFrontLeftChannel)
+    Spark frontRight = new Spark(kFrontRightChannel)
+    
+    liftMotor = new Spark (3)
+    autotimer = new timer();
+    
+    m_robotDrive = newDifferentialDrive(frontRight, frontLeft);
+    m_stick = new Joystick(kJoystickChannel);
+  }
+
+// x-axis for lateral movement, y-axis for forward movement, z-axis for rotation
+@Override
+  public void teleopPeriodic() {
+    double move = -m_stick.getRawAxis(1);
+    double rotate = m_stick.getRawAxis(4);
+    
+    // dead zone for controllers
+    
+    if(Math.abs(move) <= 0.15)
+    {
+      move = 0
+    }
+    
+    if(Math.abs(rotate) <= 0.15)
+    {
+      rotate = 0
+    }
+    
+    m_robotDrive.arcadeDrive(move,rotate);
+      if(Math.abs(m_stick.getRawAxis(2)*0.5 > 0.15)
+      {
+        liftMotor.set(-m_stick.getRawAxis(2)*0.5);
+      }
+      else if (Math.abs(m_stick.getRawAxis(3)*0.5) > 0.1)
+      {
+        liftMotor.set(m_stick.getRawAxis(3)*0.5);
+      }
+      else
+      {
+        liftMotor.set(0);
+      }
+  }
+  
+@Override
+public void autonomousPeriodic() {
+  if (DriverStation.getInstance().getGameSpecificMessage().charAt(0) == 'L')
+  {
+    //Left
+    if (autotimer.get() < 5.0)
+    {
+      m_robotDrive.arcadeDrive(0.5,0.0);
+    }
+    else if (autotimer.get() < 6.0)
+    {
+      //m_robotDrive.arcadeDrive(0.0,0.5);
+    }
+    else if (autotimer.get() < 6.75)
+    {
+      m_robotDrive.arcadeDrive(0.5,0.0)
+    }
+    else if (autotimer.get() < 7.75)
+    {
+      m_robotDrive.arcadeDrive(0.0,0.0);
+      liftMotor.set(0);
+    }
+  }
+  
+  else
+  {
+    //Right
+    if (autotimer.get() < 5.0)
+    {
+      m_robotDrive.arcadeDrive(0.5,0.0);
+    }
+    else if (autotimer.get() < 6.0)
+    {
+      m_robotDrive.arcadeDrive(0.0,-0.5);
+    }
+    else if (autotimer.get() < 6.75)
+    {
+      m_robotDrive.arcadeDrive(0.5,0.0);
+    }
+    else if (autotimer.get() < 7.75)
+    {
+      m_robotDrive.arcadeDrive(0.0,0.0);
+      liftMotor.set(0);
+    }
+  }
+}
